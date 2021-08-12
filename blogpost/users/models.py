@@ -12,7 +12,7 @@ class User(models.Model):
 
     def has_valid_display_name(self):
 
-        if self.displayName == None or len(self.displayName) < 8:
+        if self.displayName is None or len(self.displayName) < 8:
             self.notification = '"displayName" length must be at least 8 characters long'
             return False
 
@@ -24,7 +24,7 @@ class User(models.Model):
             self.notification = '"displayName" is required'
             return False
 
-        if self.displayName == None or len(self.displayName) < 8:
+        if self.displayName is None or len(self.displayName) < 8:
             self.notification = '"displayName" length must be at least 8 characters long'
             return False
 
@@ -32,7 +32,7 @@ class User(models.Model):
 
     def has_valid_email(self):
 
-        if self.email == None or not self.email:
+        if self.email is None or not self.email:
             self.notification = '"email" is required'
             return False
 
@@ -46,7 +46,7 @@ class User(models.Model):
 
     def has_valid_password(self):
 
-        if self.password == None or not self.password:
+        if self.password is None or not self.password:
             self.notification = '"password" is required'
             return False
 

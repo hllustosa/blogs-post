@@ -1,7 +1,9 @@
-from django.conf.urls import url 
-from users.views import UserView, LoginView
+from django.urls import path
+from users.views import UserView, UserDetailsView, CurrentUserView, LoginView
 
 urlpatterns = [
-    url(r'^users$', UserView.as_view()),
-    url(r'^login$', LoginView.as_view()),
+    path('users/me', CurrentUserView.as_view()),
+    path('users/<str:id>', UserDetailsView.as_view()),
+    path('users', UserView.as_view()),
+    path('login', LoginView.as_view()),
 ]

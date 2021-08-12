@@ -21,13 +21,13 @@ def is_authorized():
             token = get_token(self.request)
 
             if token == MISSING_TOKEN:
-                return JsonResponse({'message' : 'Token não encontrado'}, status=status.HTTP_401_UNAUTHORIZED)
+                return JsonResponse({'message': 'Token não encontrado'}, status=status.HTTP_401_UNAUTHORIZED)
 
             if token == INVALID_TOKEN:
-                return JsonResponse({'message' : 'Token expirado ou inválido'}, status=status.HTTP_401_UNAUTHORIZED)
+                return JsonResponse({'message': 'Token expirado ou inválido'}, status=status.HTTP_401_UNAUTHORIZED)
 
             return function(self, *args, **kwargs)
-            
+
         return authorization_wrapper
     return decorator
 
@@ -39,7 +39,10 @@ def get_user(request) -> User:
     if token == MISSING_TOKEN or token == INVALID_TOKEN:
         return None
 
-    return User.objects.get(pk=token.payload[IDENTIFIER_CLAIM])
+    try:
+        return User.objects.get(pk=token[IDENTIFIER_CLAIM])
+    except User.DoesNotExist:
+        return None
 
 
 def get_token(request) -> str:
@@ -61,7 +64,7 @@ def get_token(request) -> str:
             token = parts[1]
         else:
             token = parts[0]
-            
+
         validated_token = jwt.decode(token, SECRET_KEY, algorithms=[HS256])
 
         if not IDENTIFIER_CLAIM in validated_token:
@@ -77,15 +80,15 @@ def generate_token(user: User) -> str:
 
     encoded_jwt = jwt.encode(
         {IDENTIFIER_CLAIM: user.id,
-        EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=600)
-        }, SECRET_KEY, algorithm=HS256)
+         EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=600)
+         }, SECRET_KEY, algorithm=HS256)
     return encoded_jwt
 
 
 def hash_password(password: str) -> str:
     ph = PasswordHasher()
     return ph.hash(password)
-   
+
 
 def validate_password(password: str, hash: str) -> bool:
     ph = PasswordHasher()
