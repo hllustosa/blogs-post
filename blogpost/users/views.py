@@ -47,12 +47,13 @@ class LoginView(APIView):
         if not login_data["email"]:
             return JsonResponse({'message' : '"email" is not allowed to be empty'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not login_data["password"]:
-            return JsonResponse({'message' : '"password" is required'}, status=status.HTTP_400_BAD_REQUEST)
-
         if "password" not in login_data:
-            return JsonResponse({'message' : '"password" is not allowed to be empty'}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'message' : '"password" is required'}, status=status.HTTP_400_BAD_REQUEST)
         
+        if not login_data["password"]:
+            return JsonResponse({'message' : '"password" is not allowed to be empty'}, status=status.HTTP_400_BAD_REQUEST)
+            
+
         user = User.objects.filter(email=login_data["email"])
 
         if not user or not validate_password(login_data["password"], user.first().password):
