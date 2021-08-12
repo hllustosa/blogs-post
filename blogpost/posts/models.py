@@ -7,7 +7,7 @@ class Post(models.Model):
     content = models.TextField(blank=False, null=False)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     published = models.DateTimeField(null=False)
-    updated = models.DateTimeField()
+    updated = models.DateTimeField(null=True)
 
     def has_valid_title(self):
         if self.title is None or not self.title:

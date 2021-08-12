@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Post
+from users.serializers import UserSearchRequestSerializer
+
 
 class PostCreationRequestSerializer(serializers.ModelSerializer):
 
@@ -9,19 +11,28 @@ class PostCreationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('title', 'content')
-    
+
+
 class PostCreationResponseSerializer(serializers.ModelSerializer):
 
-    user = serializers.RelatedField(source='users', read_only=True)
+    userId = serializers.CharField(source='user_id')
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'user_id')
+        fields = ('id', 'title', 'content', 'userId')
+
+class PostUpdateResponseSerializer(serializers.ModelSerializer):
+
+    userId = serializers.CharField(source='user_id')
+
+    class Meta:
+        model = Post
+        fields = ('title', 'content', 'userId')
 
 class PostSearchRequestSerializer(serializers.ModelSerializer):
 
-    user = serializers.RelatedField(source='users', read_only=True)
+    user = UserSearchRequestSerializer()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'user_displayName', 'published', 'updated')
+        fields = ('id', 'published', 'updated', 'title', 'content', 'user')
