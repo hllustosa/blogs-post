@@ -6,8 +6,8 @@ from blogpost.settings import SECRET_KEY
 from rest_framework import status
 from django.http.response import JsonResponse
 
-AUTH_HEADER_NAME = "authorization"
-AUTH_HEADER_TYPE = "bearer"
+AUTH_HEADER_NAME = "HTTP_AUTHORIZATION"
+AUTH_HEADER_TYPE = "Bearer"
 INVALID_TOKEN = "invalid"
 MISSING_TOKEN = "missing"
 IDENTIFIER_CLAIM = "id"
@@ -54,18 +54,22 @@ def get_token(request) -> str:
         if len(parts) == 0:
             return MISSING_TOKEN
 
-        if parts[0] != AUTH_HEADER_TYPE:
-            return MISSING_TOKEN
+        if len(parts) == 2:
+            if parts[0] != AUTH_HEADER_TYPE:
+                return MISSING_TOKEN
 
-        token = parts[1]
+            token = parts[1]
+        else:
+            token = parts[0]
+            
         validated_token = jwt.decode(token, SECRET_KEY, algorithms=[HS256])
 
-        if not IDENTIFIER_CLAIM in validated_token.payload:
+        if not IDENTIFIER_CLAIM in validated_token:
             return INVALID_TOKEN
 
         return validated_token
 
-    except:
+    except Exception as e:
         return INVALID_TOKEN
 
 
@@ -73,7 +77,7 @@ def generate_token(user: User) -> str:
 
     encoded_jwt = jwt.encode(
         {IDENTIFIER_CLAIM: user.id,
-        EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+        EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=600)
         }, SECRET_KEY, algorithm=HS256)
     return encoded_jwt
 
