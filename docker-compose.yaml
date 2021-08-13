@@ -7,6 +7,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       PGDATA: /data/postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
     ports:
@@ -17,11 +22,12 @@ services:
   blogpost:
     build:
       context: ./
-      dockerfile: blogpost.dockerfile
+      dockerfile: Dockerfile
     container_name: blogpost
     restart: always
     depends_on:
-      - "postgres"
+      postgres:
+        condition: service_healthy
     ports:
       - '8000:8000'
     networks: 
