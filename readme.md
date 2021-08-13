@@ -68,6 +68,15 @@ docker-compose up -d
 ### Testando a API
 
 Após a execução, a aplicação estará disponível a partir desse momento em http://localhost:8000
-Este [collection do postman](www.google.com) contém um conjunto de testes e documentação completa da API e de todos os métodos.
+Esta [collection do postman](https://github.com/hllustosa/blogs-post/blob/master/tests/Blog%20Post.postman_collection.json) contém um conjunto de testes e documentação completa da API e de todos os métodos.
 
 
+### Mais informações 
+
+[Este vídeo](https://youtu.be/Kkz8FLLPztA) contém uma demonstração da API em execução. 
+
+Para mais projetos meus, acesse:
+
+[Aplicação Para Execução de Exercícios de Programação em Python (Pyhon/Microsserviços)](https://github.com/hllustosa/online-judge)
+[Aplicação de Censo em Microsserviços (.Net e ReactJS)](https://github.com/hllustosa/censo-demografico)
+[Aplicação para registro de empréstimos de jogos em (.Net e ReactJS)](https://github.com/hllustosa/game-manager)
