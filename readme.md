@@ -77,6 +77,8 @@ Esta [collection do postman](https://github.com/hllustosa/blogs-post/blob/master
 
 Para mais projetos meus, acesse:
 
-[Aplicação Para Execução de Exercícios de Programação em Python (Pyhon/Microsserviços)](https://github.com/hllustosa/online-judge)
-[Aplicação de Censo em Microsserviços (.Net e ReactJS)](https://github.com/hllustosa/censo-demografico)
-[Aplicação para registro de empréstimos de jogos em (.Net e ReactJS)](https://github.com/hllustosa/game-manager)
+- [Aplicação Para Execução de Exercícios de Programação em Python (Pyhon/Microsserviços)](https://github.com/hllustosa/online-judge)
+
+- [Aplicação de Censo em Microsserviços (.Net e ReactJS)](https://github.com/hllustosa/censo-demografico)
+
+- [Aplicação para registro de empréstimos de jogos em (.Net e ReactJS)](https://github.com/hllustosa/game-manager)
