@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,14 +77,17 @@ WSGI_APPLICATION = 'blogpost.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+DB_HOST = 'postgres' if os.environ['ENV'] == 'PRODUCTION' else 'localhost'
+DB_NAME = 'postgres' if os.environ['ENV'] == 'PRODUCTION' else 'blogpost'
+
 DATABASES = {
      'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'blogpost',
+        'NAME': DB_NAME,
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'HOST': DB_HOST,
+        'PORT':  '5432'
     }
 }
 
