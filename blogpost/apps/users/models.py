@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from django.core.exceptions import ValidationError
-from django.db import models
 from django.core.validators import validate_email
+from django.db import models
 
 
 class User(models.Model):
@@ -12,14 +14,6 @@ class User(models.Model):
 
     def has_valid_display_name(self):
 
-        if self.displayName is None or len(self.displayName) < 8:
-            self.notification = '"displayName" length must be at least 8 characters long'
-            return False
-
-        return True
-
-    def has_valid_display_name(self):
-        
         if not self.displayName:
             self.notification = '"displayName" is required'
             return False

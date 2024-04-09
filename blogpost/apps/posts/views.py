@@ -1,13 +1,21 @@
+from __future__ import annotations
+
+from apps.posts.models import Post
+from apps.users.authentication import get_user
+from apps.users.authentication import is_authorized
 from django.db.models.query_utils import Q
+from django.http.response import HttpResponse
+from django.http.response import JsonResponse
 from django.utils import timezone
-from utils import create_id
 from rest_framework import status
 from rest_framework.parsers import JSONParser
-from apps.posts.models import Post
 from rest_framework.views import APIView
-from apps.users.authentication import is_authorized, get_user
-from django.http.response import HttpResponse, JsonResponse
-from .serializers import PostCreationRequestSerializer, PostCreationResponseSerializer, PostSearchRequestSerializer, PostUpdateResponseSerializer
+from utils import create_id
+
+from .serializers import PostCreationRequestSerializer
+from .serializers import PostCreationResponseSerializer
+from .serializers import PostSearchRequestSerializer
+from .serializers import PostUpdateResponseSerializer
 
 SEARCH_PARAM = 'q'
 
@@ -22,20 +30,29 @@ class PostView(APIView):
         post_object = serializer.create_post()
 
         if not post_object.has_valid_title():
-            return JsonResponse({'message': post_object.notification}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {'message': post_object.notification},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not post_object.has_valid_content():
-            return JsonResponse({'message': post_object.notification}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(
+                {'message': post_object.notification},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         time = timezone.localtime()
 
-        post_object.id = create_id("post")
+        post_object.id = create_id('post')
         post_object.user = get_user(request)
         post_object.published = time
         post_object.updated = time
         post_object.save()
 
-        return JsonResponse(PostCreationResponseSerializer(post_object, many=False).data, status=status.HTTP_201_CREATED)
+        return JsonResponse(
+            PostCreationResponseSerializer(post_object, many=False).data,
+            status=status.HTTP_201_CREATED,
+        )
 
     @is_authorized()
     def get(self, request):

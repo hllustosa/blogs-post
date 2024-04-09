@@ -1,5 +1,8 @@
-from django.db import models
+from __future__ import annotations
+
 from apps.users.models import User
+from django.db import models
+
 
 class Post(models.Model):
     id = models.CharField(primary_key=True, max_length=35)
@@ -15,13 +18,10 @@ class Post(models.Model):
             return False
 
         return True
-    
+
     def has_valid_content(self):
         if self.content is None or not self.content:
             self.notification = '"content" is required'
             return False
-            
+
         return True
-
-
-       

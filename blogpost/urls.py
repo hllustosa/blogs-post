@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from apps.posts.views import PostDetailsView
+from apps.posts.views import PostSearchView
+from apps.posts.views import PostView
+from apps.users.views import CurrentUserView
+from apps.users.views import LoginView
+from apps.users.views import UserDetailsView
+from apps.users.views import UserView
 from django.urls import path
-from apps.users.views import UserView, UserDetailsView, CurrentUserView, LoginView
-from apps.posts.views import PostView, PostDetailsView, PostSearchView
 
 urlpatterns = [
     path('users/me', CurrentUserView.as_view()),

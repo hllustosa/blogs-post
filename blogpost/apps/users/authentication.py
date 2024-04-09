@@ -1,18 +1,23 @@
+from __future__ import annotations
+
 import datetime
+from typing import Any
+
 import jwt
 from argon2 import PasswordHasher
-from .models import User
-from settings import SECRET_KEY
-from rest_framework import status
 from django.http.response import JsonResponse
+from rest_framework import status
+from settings import SECRET_KEY
 
-AUTH_HEADER_NAME = "HTTP_AUTHORIZATION"
-AUTH_HEADER_TYPE = "Bearer"
-INVALID_TOKEN = "invalid"
-MISSING_TOKEN = "missing"
-IDENTIFIER_CLAIM = "id"
-EXPIRATION_CLAIM = "exp"
-HS256 = "HS256"
+from .models import User
+
+AUTH_HEADER_NAME = 'HTTP_AUTHORIZATION'
+AUTH_HEADER_TYPE = 'Bearer'
+INVALID_TOKEN = 'invalid'
+MISSING_TOKEN = 'missing'
+IDENTIFIER_CLAIM = 'id'
+EXPIRATION_CLAIM = 'exp'
+HS256 = 'HS256'
 
 
 def is_authorized():
@@ -32,7 +37,7 @@ def is_authorized():
     return decorator
 
 
-def get_user(request) -> User:
+def get_user(request) -> User | None:
 
     token = get_token(request)
 
@@ -45,10 +50,11 @@ def get_user(request) -> User:
         return None
 
 
-def get_token(request) -> str:
+def get_token(request) -> Any:
 
     try:
         header = request.META.get(AUTH_HEADER_NAME)
+
         if header is None:
             return MISSING_TOKEN
 
@@ -67,22 +73,25 @@ def get_token(request) -> str:
 
         validated_token = jwt.decode(token, SECRET_KEY, algorithms=[HS256])
 
-        if not IDENTIFIER_CLAIM in validated_token:
+        if IDENTIFIER_CLAIM not in validated_token:
             return INVALID_TOKEN
 
         return validated_token
 
-    except Exception as e:
+    except Exception:
         return INVALID_TOKEN
 
 
 def generate_token(user: User) -> str:
 
     encoded_jwt = jwt.encode(
-        {IDENTIFIER_CLAIM: user.id,
-         EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=600)
-         }, SECRET_KEY, algorithm=HS256)
-    return encoded_jwt
+        {
+            IDENTIFIER_CLAIM: user.id,
+            EXPIRATION_CLAIM: datetime.datetime.utcnow() + datetime.timedelta(seconds=600),
+        }, SECRET_KEY, algorithm=HS256,
+    )
+
+    return str(encoded_jwt)
 
 
 def hash_password(password: str) -> str:
@@ -94,5 +103,5 @@ def validate_password(password: str, hash: str) -> bool:
     ph = PasswordHasher()
     try:
         return ph.verify(hash, password)
-    except:
+    except Exception:
         return False
