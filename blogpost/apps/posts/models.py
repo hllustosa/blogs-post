@@ -11,17 +11,3 @@ class Post(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     published = models.DateTimeField(null=False)
     updated = models.DateTimeField(null=True)
-
-    def has_valid_title(self):
-        if self.title is None or not self.title:
-            self.notification = '"title" is required'
-            return False
-
-        return True
-
-    def has_valid_content(self):
-        if self.content is None or not self.content:
-            self.notification = '"content" is required'
-            return False
-
-        return True

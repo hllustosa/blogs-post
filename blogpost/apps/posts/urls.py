@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from apps.posts.views import PostDetailsView
-from apps.posts.views import PostSearchView
-from apps.posts.views import PostView
+from apps.posts.views import PostListCreateAPIView
+from apps.posts.views import PostRetrieveUpdateDestroyAPIView
 from django.urls import path
 
 urlpatterns = [
-    path('posts/search', PostSearchView.as_view(), name='search-posts'),
-    path('posts/<str:id>', PostDetailsView.as_view(), name='detail-post'),
-    path('posts', PostView.as_view(), name='create-posts'),
+    path(
+        'posts/<str:pk>', PostRetrieveUpdateDestroyAPIView.as_view(),
+        name='retrieve-update-destroy',
+    ),
+    path('posts', PostListCreateAPIView.as_view(), name='liste-create'),
 ]

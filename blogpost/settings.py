@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'apps.users',
     'apps.posts',
@@ -102,6 +103,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'UNAUTHENTICATED_USER': None,
+    'DEFAULT_AUTHENTICATION_CLASSES': ['utils.auth.BlogPostAuthentication'],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

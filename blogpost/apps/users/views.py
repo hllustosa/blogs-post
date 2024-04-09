@@ -1,118 +1,56 @@
 from __future__ import annotations
 
+from apps.users.filters import UserFilter
 from apps.users.models import User
-from django.http.response import HttpResponse
+from apps.users.password import validate_password
+from apps.users.serializers import LoginSerializer
+from apps.users.serializers import UserSerializer
 from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404
+from rest_framework import generics
 from rest_framework import status
-from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
-from utils import create_id
-
-from .authentication import generate_token
-from .authentication import get_user
-from .authentication import hash_password
-from .authentication import is_authorized
-from .authentication import validate_password
-from .serializers import UserCreationRequestSerializer
-from .serializers import UserSearchRequestSerializer
+from utils.permission import BlogPostCreateListUserPermission
+from utils.permission import BlogPostPermission
+from utils.token import generate_token
+from utils.token import get_user_id
 
 
-class UserView(APIView):
-
-    def post(self, request):
-
-        user_data = JSONParser().parse(request)
-        serializer = UserCreationRequestSerializer(data=user_data)
-        user = serializer.create_user()
-
-        if not user.has_valid_display_name():
-            return JsonResponse({'message': user.notification}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not user.has_valid_email():
-            return JsonResponse({'message': user.notification}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not user.has_valid_password():
-            return JsonResponse({'message': user.notification}, status=status.HTTP_400_BAD_REQUEST)
-
-        if user.has_existing_email():
-            return JsonResponse({'message': user.notification}, status=status.HTTP_409_CONFLICT)
-
-        user.id = create_id('usr')
-        user.password = hash_password(user.password)
-        user.save()
-
-        return JsonResponse({'token': generate_token(user)}, status=status.HTTP_201_CREATED)
-
-    @is_authorized()
-    def get(self, request):
-        users = User.objects.all()
-        users_serializer = UserSearchRequestSerializer(users, many=True)
-        return JsonResponse(users_serializer.data, safe=False)
+class UserListCreateAPIView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [BlogPostCreateListUserPermission]
+    filterset_class = UserFilter
 
 
-class UserDetailsView(APIView):
-
-    @is_authorized()
-    def get(self, request, id):
-        user = self.get_user_from_id(id)
-
-        if user is None:
-            return JsonResponse({'message': 'Usuário não existe'}, status=status.HTTP_404_NOT_FOUND)
-
-        users_serializer = UserSearchRequestSerializer(user)
-        return JsonResponse(users_serializer.data, safe=False)
-
-    def get_user_from_id(self, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
+class UserRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [BlogPostPermission]
+    filterset_class = UserFilter
 
 
 class CurrentUserView(APIView):
 
-    @is_authorized()
     def get(self, request):
-
-        user = get_user(request)
-        if user is None:
-            return JsonResponse({'message': 'Usuário não existe'}, status=status.HTTP_404_NOT_FOUND)
-
-        users_serializer = UserSearchRequestSerializer(user)
+        current_user_id = get_user_id(request)
+        user = get_object_or_404(User, pk=current_user_id)
+        users_serializer = UserSerializer(user)
         return JsonResponse(users_serializer.data, safe=False)
-
-    @is_authorized()
-    def delete(self, request):
-        user = get_user(request)
-        user.delete()
-
-        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
 class LoginView(APIView):
 
     def post(self, request):
+        serializer = LoginSerializer(data=request.data)
 
-        login_data = JSONParser().parse(request)
+        if not serializer.is_valid():
+            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if 'email' not in login_data:
-            return JsonResponse({'message': '"email" is required'}, status=status.HTTP_400_BAD_REQUEST)
+        login_data = serializer.data
+        user = User.objects.filter(email=login_data['email']).first()
 
-        if not login_data['email']:
-            return JsonResponse({'message': '"email" is not allowed to be empty'}, status=status.HTTP_400_BAD_REQUEST)
+        if not user or not validate_password(login_data['password'], user.password):
+            return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if 'password' not in login_data:
-            return JsonResponse({'message': '"password" is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not login_data['password']:
-            return JsonResponse(
-                {'message': '"password" is not allowed to be empty'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        user = User.objects.filter(email=login_data['email'])
-
-        if not user or not validate_password(login_data['password'], user.first().password):
-            return JsonResponse({'message': 'Campos inválidos'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return JsonResponse({'token': generate_token(user.first())}, status=status.HTTP_200_OK)
+        return JsonResponse({'token': generate_token(user)}, status=status.HTTP_200_OK)
