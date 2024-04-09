@@ -3,6 +3,8 @@ from __future__ import annotations
 from apps.users.filters import UserFilter
 from apps.users.models import User
 from apps.users.password import validate_password
+from apps.users.permissions import HasListUserPermission
+from apps.users.permissions import HasUserOwnership
 from apps.users.serializers import LoginSerializer
 from apps.users.serializers import UserSerializer
 from django.http.response import JsonResponse
@@ -10,9 +12,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.views import APIView
-from utils.permission import BlogPostCreateListUserPermission
-from utils.permission import BlogPostHasObjPermission
-from utils.permission import BlogPostPermission
+from utils.permission import IsAuthenticated
 from utils.token import generate_token
 from utils.token import get_user_id
 
@@ -20,14 +20,14 @@ from utils.token import get_user_id
 class UserListCreateAPIView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [BlogPostCreateListUserPermission]
+    permission_classes = [HasListUserPermission]
     filterset_class = UserFilter
 
 
 class UserRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [BlogPostPermission, BlogPostHasObjPermission]
+    permission_classes = [IsAuthenticated, HasUserOwnership]
     filterset_class = UserFilter
 
 
