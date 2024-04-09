@@ -9,5 +9,5 @@ urlpatterns = [
         'posts/<str:pk>', PostRetrieveUpdateDestroyAPIView.as_view(),
         name='retrieve-update-destroy',
     ),
-    path('posts', PostListCreateAPIView.as_view(), name='liste-create'),
+    path('posts', PostListCreateAPIView.as_view(), name='list-create'),
 ]

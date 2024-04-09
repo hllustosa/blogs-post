@@ -24,3 +24,11 @@ def user_data():
         'password': '12345678',
         'image': 'http://4.bp.blogspot.com/_YA50adQ-7vQ/S1gfR_6ufpI/AAAAAAAAAAk/1ErJGgRWZDg/S45/brett.png',
     }
+
+
+@pytest.fixture
+def post_data():
+    return {
+        'title': 'Latest updates, August 1st',
+        'content': 'The whole text for the blog post goes here in this key',
+    }

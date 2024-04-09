@@ -28,7 +28,7 @@ def test_create_user_with_duplicated_email(client, user_data):
 
 @pytest.mark.parametrize('field', ['displayName', 'password', 'email'])
 @pytest.mark.django_db
-def test_missing_required_fields(client, user_data, field):
+def test_create_user_with_missing_required_fields(client, user_data, field):
     del user_data[field]
     status_code, response = call_create_user(client, user_data)
 
@@ -45,7 +45,7 @@ def test_missing_required_fields(client, user_data, field):
     ],
 )
 @pytest.mark.django_db
-def test_invalid_fields(client, user_data, field, invalid):
+def test_create_user_with_invalid_fields_values(client, user_data, field, invalid):
     user_data[field] = invalid
     status_code, response = call_create_user(client, user_data)
 
