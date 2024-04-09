@@ -11,6 +11,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.views import APIView
 from utils.permission import BlogPostCreateListUserPermission
+from utils.permission import BlogPostHasObjPermission
 from utils.permission import BlogPostPermission
 from utils.token import generate_token
 from utils.token import get_user_id
@@ -26,7 +27,7 @@ class UserListCreateAPIView(generics.ListCreateAPIView):
 class UserRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [BlogPostPermission]
+    permission_classes = [BlogPostPermission, BlogPostHasObjPermission]
     filterset_class = UserFilter
 
 
