@@ -30,29 +30,23 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def validate_displayName(self, value):
-        if not value:
-            raise serializers.ValidationError('"displayName" is required')
         if len(value) < 8:
             raise serializers.ValidationError(
-                '"displayName" length must be at least 8 characters long',
+                'displayName length must be at least 8 characters long',
             )
         return value
 
     def validate_email(self, value):
-        if not value:
-            raise serializers.ValidationError('"email" is required')
         try:
             validate_email(value)
         except ValidationError:
-            raise serializers.ValidationError('"email" must be a valid email')
+            raise serializers.ValidationError('email must be a valid email')
         return value
 
     def validate_password(self, value):
-        if not value:
-            raise serializers.ValidationError('"password" is required')
         if len(value) < 8:
             raise serializers.ValidationError(
-                '"password" length must be at least 8 characters long',
+                'password length must be at least 8 characters long',
             )
         return value
 

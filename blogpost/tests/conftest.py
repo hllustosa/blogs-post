@@ -21,6 +21,6 @@ def user_data():
     return {
         'displayName': 'Brett Wiltshire',
         'email': 'testemail@email.com',
-        'password': '123456',
+        'password': '12345678',
         'image': 'http://4.bp.blogspot.com/_YA50adQ-7vQ/S1gfR_6ufpI/AAAAAAAAAAk/1ErJGgRWZDg/S45/brett.png',
     }
